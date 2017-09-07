@@ -1,3 +1,5 @@
+from Adafruit_MotorHAT import Adafruit_MotorHAT
+
 USB_KEY = "/home/simon/Code/sr/usbkey"
 
 OUT_H0 = 0
@@ -25,7 +27,7 @@ class Robot:
 
 class Power:
     def __init__(self):
-        self.output = []
+        self.output = [0]*6
         self.output[OUT_H0] = True
         self.output[OUT_H1] = True
         self.output[OUT_L0] = True
@@ -41,21 +43,26 @@ class Power:
 
 class MotorBoard:
     def __init__(self, zone = 0):
-        self.m0 = Motor()
-        self.m1 = Motor()
+        self._mh = Adafruit_MotorHAT()
+
+        self.m0 = Motor(self._mh.getMotor(1))
+        self.m1 = Motor(self._mh.getMotor(2))
 
     def index(self):
         return "motor_board"
 
 class Motor:
-    def __init__(self, zone = 0):
+    def __init__(self, motor):
+        self.motor = motor 
         self.use_brake = True
 
     def index(self):
         return "motor"
 
     def power(self, power):
-        return "power"
+        self.motor.setSpeed(power)        
+        
+        return "Setting power to " + str(power)
 
 class Ruggeduino:
     def index(self):
